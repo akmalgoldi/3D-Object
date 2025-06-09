@@ -1,24 +1,19 @@
-// Variabel Transformasi Objek
 float pitch = radians(-15), yaw = 0, roll = 0; 
 float crabX = 0, pedY = 0, scaleFactor = 1.0; 
 
-// Variabel Kontrol Kecepatan
 float rotRate = 1.5; 
 float transRate = 2.0; 
 float zoomRate = 0.04; 
 float lightRate = 4.0; 
 
-// Variabel Tekstur & Model
 PShape akmModel;
 PImage textureA, textureB; 
 boolean useTextureB = false;
 
-// Variabel Cahaya
 float lightX, lightY, lightZ = 200; 
 
 void setup() {
   size(1280, 720, P3D); 
-  // Inisialisasi posisi cahaya Y
   lightY = -height / 4;
   try {
     akmModel = loadShape("AKM.obj");
@@ -37,14 +32,11 @@ void setup() {
 void draw() {
   background(20, 25, 35);
 
-  // Update transformasi berdasarkan input
   updateTransformations();
 
-  // Pencahayaan
   ambientLight(100, 100, 110);
   pointLight(255, 250, 240, lightX, lightY, lightZ);
 
-  // Terapkan Transformasi Objek
   pushMatrix();
   translate(width / 2 + crabX, height / 2 + pedY, 0); 
   rotateZ(roll);
@@ -52,12 +44,10 @@ void draw() {
   rotateY(yaw);
   scale(scaleFactor);
 
-  // Gambar Model dengan Tekstur
   drawModel();
   popMatrix();
 }
 
-// Mengupdate posisi/rotasi berdasarkan tombol yang ditekan
 void updateTransformations() {
   // Rotasi (Pitch, Yaw, Roll)
   if (keyPressed) {
@@ -66,7 +56,6 @@ void updateTransformations() {
     if (keyCode == LEFT) yaw -= radians(rotRate);
     if (keyCode == RIGHT) yaw += radians(rotRate);
 
-    // Translasi (Crab, Pedestal) & Zoom & Cahaya
     switch (key) {
       case 'a':
       case 'A':
@@ -128,7 +117,6 @@ void updateTransformations() {
   }
 }
 
-// Fungsi untuk menggambar model dan mengatur tekstur
 void drawModel() {
   if (akmModel == null) {
     fill(255, 0, 0, 180); 
@@ -149,7 +137,6 @@ void drawModel() {
   shape(akmModel);
 }
 
-// Toggle Tekstur & Reset (saat tombol dilepas)
 void keyReleased() {
   if (key == 't' || key == 'T') {
     useTextureB = !useTextureB;
