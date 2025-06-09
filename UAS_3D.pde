@@ -1,36 +1,35 @@
-// --- Variabel Kontrol Gerakan ---
 float pitch = 0, yaw = 0, roll = 0;
-float rotationRate = 1.0; // Derajat per frame
+float rotationRate = 1.0; 
 
-// Variabel boolean untuk status tombol ditekan (di grup pergerakan)
 boolean pitchUpActive, pitchDownActive, yawLeftActive, yawRightActive, rollLeftActive, rollRightActive;
 boolean crabLeftActive, crabRightActive, pedestalUpActive, pedestalDownActive;
 boolean zoomInActive, zoomOutActive;
 boolean lightMoveForwardActive, lightMoveBackwardActive, lightMoveLeftActive, lightMoveRightActive, lightMoveUpActive, lightMoveDownActive;
 
 float crabX = 0, pedY = 0;
-float translationRate = 2.0; // Unit per frame
+float translationRate = 2.0; 
 float scaleFactor = 1.0;
-float zoomRate = 0.01; // Perubahan skala per frame
+float zoomRate = 0.01; 
 
-// --- Variabel Model 3D & Tekstur ---
 PShape akmModel;
-boolean isTexture2Active = false; // Default: texture.jpg (warna solid) aktif
-PImage textureSolidColor; // Untuk texture.jpg (default / "OFF" state)
-PImage textureActual;     // Untuk texture2.jpg ("ON" state)
+boolean isTexture2Active = false; 
+PImage textureSolidColor; 
+PImage textureActual;       
 
-// --- Variabel Sumber Cahaya ---
 float lightX_scene, lightY_scene, lightZ_scene;
-float lightMoveRate = 3.0; // Unit per frame
+float lightMoveRate = 3.0; 
 
-// --- Variabel Lainnya ---
 PFont statusFont;
 final int STATUS_FONT_SIZE = 16;
 
-void setup() {
-  size(1280, 720, P3D); // Inisialisasi ukuran jendela dan mode 3D
+float currentHudYPos;
+float hudXPos = 10;
+final float HUD_Y_SPACING = 18;
 
-  // --- Inisialisasi Font ---
+void setup() {
+  size(1280, 720, P3D); 
+
+  
   try {
     statusFont = createFont("Arial", STATUS_FONT_SIZE);
     if (statusFont == null) statusFont = createFont("SansSerif", STATUS_FONT_SIZE);
@@ -38,7 +37,6 @@ void setup() {
     println("Error font: " + e.getMessage());
   }
 
-  // --- Muat Model 3D ---
   try {
     akmModel = loadShape("AKM.obj");
     if (akmModel == null) println("ERROR: Gagal memuat AKM.obj dari folder 'data'.");
@@ -51,7 +49,6 @@ void setup() {
     akmModel = null;
   }
 
-  // --- Muat Tekstur ---
   try {
     textureSolidColor = loadImage("texture.jpg");
     if (textureSolidColor == null) println("Peringatan: 'texture.jpg' tidak ditemukan. Mode 'warna solid' tidak akan tampil.");
@@ -70,42 +67,38 @@ void setup() {
     textureActual = null;
   }
 
-  // --- Inisialisasi Posisi Awal Objek & Cahaya ---
-  pitch = radians(-15); // Kemiringan awal
+  pitch = radians(-15); 
   lightX_scene = 0;
   lightY_scene = -height / 4;
   lightZ_scene = 200;
 
-  displayControlHints(); // Panggil fungsi ini di sini, sekali saja.
+  displayControlHints();
 }
 
-// --- Fungsi untuk menampilkan informasi kontrol di konsol ---
 void displayControlHints() {
-  println("\n--- KONTROL OBJEK (TAHAN TOMBOL) ---");
+  println("KONTROL OBJEK (TAHAN TOMBOL)");
   println("Pitch: Panah ATAS/BAWAH | Yaw: Panah KIRI/KANAN | Roll: 'A'/'D'");
   println("Crab: 'Q'/'E' | Pedestal: 'W'/'S' | Zoom: '+/-'");
-  println("--- KONTROL SEKALI TEKAN ---");
   println("Tekstur (Toggle ON/OFF): 'T' | Reset All: 'R'");
-  println("--- KONTROL CAHAYA (TAHAN TOMBOL) ---");
+  println("KONTROL CAHAYA (TAHAN TOMBOL)");
   println("Geser Cahaya X: 'J'/'L' | Y: 'I'/'K' | Z: 'U'/'O'");
-  println("------------------------------------");
 }
 
 
 void draw() {
-  background(20, 25, 35); // Warna latar belakang gelap
+  background(20, 25, 35); 
 
-  handleContinuousInput(); // Update pergerakan berdasarkan tombol yang ditekan
+  handleContinuousInput(); 
 
   // --- Pengaturan Pencahayaan ---
-  ambientLight(100, 100, 110); // Cahaya merata di seluruh scene
-  pointLight(255, 250, 240, lightX_scene, lightY_scene, lightZ_scene); // Sumber cahaya titik yang bisa digeser
+  ambientLight(100, 100, 110); 
+  pointLight(255, 250, 240, lightX_scene, lightY_scene, lightZ_scene); 
 
   // --- Transformasi Kamera/View ---
-  translate(width / 2, height / 2, 0); // Pusatkan objek di tengah layar
-  translate(crabX, pedY, 0); // Terapkan pergeseran Crab dan Pedestal
+  translate(width / 2, height / 2, 0);
+  translate(crabX, pedY, 0); 
 
-  pushMatrix(); // Simpan state transformasi sebelum rotasi/skala objek
+  pushMatrix(); 
 
   // --- Rotasi dan Skala Objek ---
   rotateZ(roll);
@@ -113,11 +106,10 @@ void draw() {
   rotateY(yaw);
   scale(scaleFactor);
 
-  drawAKMModel(); // Gambar model dengan tekstur yang sesuai
+  drawAKMModel(); 
+  popMatrix(); 
 
-  popMatrix(); // Kembalikan state transformasi
-
-  displayHUD(); // Tampilkan HUD (informasi kontrol dan status)
+  displayHUD(); 
 }
 
 // --- Fungsi untuk menangani input tombol yang ditekan terus menerus ---
@@ -134,7 +126,7 @@ void handleContinuousInput() {
   if (crabLeftActive) crabX -= translationRate;
   if (crabRightActive) crabX += translationRate;
   if (pedestalUpActive) pedY -= translationRate;
-  if (pedestalDownActive) pedY += translationRate; 
+  if (pedestalDownActive) pedY += translationRate;  
 
   if (zoomInActive) scaleFactor += zoomRate;
   if (zoomOutActive) {
@@ -157,28 +149,27 @@ void drawAKMModel() {
     return;
   }
 
-  akmModel.disableStyle(); // Nonaktifkan style default (dari .mtl) untuk kontrol tekstur manual
+  akmModel.disableStyle(); 
 
   PImage currentTextureToDisplay = null;
 
   // Tentukan tekstur mana yang akan ditampilkan
-  if (isTexture2Active) { // Jika 'ON' (texture2.jpg)
+  if (isTexture2Active) { 
     currentTextureToDisplay = textureActual;
-  } else { // Jika 'OFF' (texture.jpg)
+  } else { 
     currentTextureToDisplay = textureSolidColor;
   }
 
-  // Terapkan tekstur jika ada, atau tampilkan error jika tidak
   if (currentTextureToDisplay != null) {
     akmModel.setTexture(currentTextureToDisplay);
-    akmModel.enableStyle(); // Aktifkan style agar tekstur yang di-setTexture terlihat
+    akmModel.enableStyle(); 
   } else {
-    fill(255, 0, 0, 180); // Warna merah transparan jika tekstur gagal dimuat
+    fill(255, 0, 0, 180); 
     noStroke();
     println("WARNING: Tekstur gagal dimuat untuk status ini.");
   }
 
-  shape(akmModel); // Gambar objek 3D
+  shape(akmModel); 
 }
 
 // --- Fungsi untuk menangani penekanan tombol ---
@@ -194,7 +185,7 @@ void keyPressed() {
     case 'q': case 'Q': crabLeftActive = true; break;
     case 'e': case 'E': crabRightActive = true; break;
     case 'w': case 'W': pedestalUpActive = true; break;
-    case 's': case 'S': pedestalDownActive = true; break; // PERBAIKAN: Ini harus true
+    case 's': case 'S': pedestalDownActive = true; break;
     case '+': case '=': zoomInActive = true; break;
     case '-': case '_': zoomOutActive = true; break;
     case 'j': case 'J': lightMoveLeftActive = true; break;
@@ -204,7 +195,7 @@ void keyPressed() {
     case 'u': case 'U': lightMoveBackwardActive = true; break;
     case 'o': case 'O': lightMoveForwardActive = true; break;
     case 't': case 'T':
-      isTexture2Active = !isTexture2Active; // Toggle status ON/OFF tekstur
+      isTexture2Active = !isTexture2Active; 
       println("Tekstur: " + (isTexture2Active ? "ON (texture2.jpg)" : "OFF (texture.jpg)"));
       break;
     case 'r': case 'R':
@@ -213,9 +204,9 @@ void keyPressed() {
       crabX = 0; pedY = 0;
       scaleFactor = 1.0;
       lightX_scene = 0; lightY_scene = -height / 4; lightZ_scene = 200;
-      isTexture2Active = false; // Reset ke default (texture.jpg)
+      isTexture2Active = false; 
       println("Posisi, rotasi, zoom, cahaya, dan tekstur direset.");
-      // Reset semua status active key ke false
+     
       resetActiveKeys();
       break;
   }
@@ -254,39 +245,52 @@ void resetActiveKeys() {
   lightMoveLeftActive = lightMoveRightActive = lightMoveUpActive = lightMoveDownActive = lightMoveForwardActive = lightMoveBackwardActive = false;
 }
 
-// --- Fungsi untuk menampilkan informasi kontrol dan status (HUD) ---
+// --- Fungsi bantu untuk menulis teks HUD dan menggeser yPos ---
+void drawHUDText(String str) {
+  text(str, hudXPos, currentHudYPos);
+  currentHudYPos += HUD_Y_SPACING;
+}
+
 void displayHUD() {
   pushMatrix();
   camera();
   noLights();
-  hint(DISABLE_DEPTH_TEST); // Pastikan HUD digambar di atas semua objek 3D
+  hint(DISABLE_DEPTH_TEST);
 
+  // Atur font dan warna teks
   if (statusFont != null) textFont(statusFont, STATUS_FONT_SIZE);
-  else textSize(STATUS_FONT_SIZE);
-  fill(255); // Warna teks putih
+  else textSize(STATUS_FONT_SIZE); 
+  fill(255); 
 
-  float xPos = 10, yPos = 20, ySpacing = 18;
+  // Inisialisasi posisi Y untuk HUD pada setiap pemanggilan displayHUD()
+  currentHudYPos = 20;
 
-  // --- Tampilan Kontrol ---
-  text("--- KONTROL OBJEK (TAHAN TOMBOL) ---", xPos, yPos); yPos += ySpacing * 1.5f;
-  text("Pitch: Panah ATAS/BAWAH", xPos, yPos); yPos += ySpacing;
-  text("Yaw: Panah KIRI/KANAN", xPos, yPos); yPos += ySpacing;
-  text("Roll: 'A' / 'D'", xPos, yPos); yPos += ySpacing;
-  text("Crab (Geser Ki/Ka): 'Q' / 'E'", xPos, yPos); yPos += ySpacing;
-  text("Pedestal (Geser Atas/Bwh): 'W' / 'S'", xPos, yPos); yPos += ySpacing;
-  text("Zoom: '+' / '-'", xPos, yPos); yPos += ySpacing;
+  // --- KONTROL OBJEK (TAHAN TOMBOL) ---
+  drawHUDText("KONTROL OBJEK (TAHAN TOMBOL)"); currentHudYPos += HUD_Y_SPACING * 0.5f; // Spasi ekstra
+  drawHUDText("Pitch: Panah ATAS/BAWAH");
+  drawHUDText("Yaw: Panah KIRI/KANAN");
+  drawHUDText("Roll: 'A' / 'D'");
+  drawHUDText("Crab (Geser Ki/Ka): 'Q' / 'E'");
+  drawHUDText("Pedestal (Geser Atas/Bwh): 'W' / 'S'");
+  drawHUDText("Zoom: '+' / '-'");
 
-  text("--- KONTROL SEKALI TEKAN ---", xPos, yPos); yPos += ySpacing * 1.5f;
-  text("Tekstur (Toggle ON/OFF): 'T'", xPos, yPos); yPos += ySpacing;
-  text("Reset All: 'R'", xPos, yPos); yPos += ySpacing * 1.5f;
+  // --- KONTROL SEKALI TEKAN ---
+  currentHudYPos += HUD_Y_SPACING * 0.5f; 
+  drawHUDText("KONTROL SEKALI TEKAN"); currentHudYPos += HUD_Y_SPACING * 0.5f;
+  drawHUDText("Tekstur (Toggle ON/OFF): 'T'");
+  drawHUDText("Reset All: 'R'");
 
-  text("--- KONTROL CAHAYA (TAHAN TOMBOL) ---", xPos, yPos); yPos += ySpacing * 1.5f;
-  text("Geser Cahaya X: 'J' / 'L'", xPos, yPos); yPos += ySpacing;
-  text("Geser Cahaya Y: 'I' / 'K'", xPos, yPos); yPos += ySpacing;
-  text("Geser Cahaya Z: 'U' / 'O'", xPos, yPos); yPos += ySpacing * 1.5f;
+  // --- KONTROL CAHAYA (TAHAN TOMBOL) ---
+  currentHudYPos += HUD_Y_SPACING * 0.5f; 
+  drawHUDText("KONTROL CAHAYA"); currentHudYPos += HUD_Y_SPACING * 0.5f;
+  drawHUDText("Geser Cahaya X: 'J' / 'L'");
+  drawHUDText("Geser Cahaya Y: 'I' / 'K'");
+  drawHUDText("Geser Cahaya Z: 'U' / 'O'");
 
-  // --- Tampilan Status ---
-  text("--- STATUS ---", xPos, yPos); yPos += ySpacing * 1.5f;
+  // --- STATUS ---
+  currentHudYPos += HUD_Y_SPACING * 0.5f; // Spasi antar bagian
+  drawHUDText("--- STATUS ---"); currentHudYPos += HUD_Y_SPACING * 0.5f;
+
   String textureStatusText = "Tekstur: ";
   if (isTexture2Active) {
       textureStatusText += "ON (texture2.jpg)";
@@ -295,12 +299,12 @@ void displayHUD() {
       textureStatusText += "OFF (texture.jpg)";
       if (textureSolidColor == null) textureStatusText += " (GAGAL MUAT!)";
   }
-  text(textureStatusText, xPos, yPos); yPos += ySpacing;
+  drawHUDText(textureStatusText);
 
-  text(String.format("Light Pos: %.0f, %.0f, %.0f", lightX_scene, lightY_scene, lightZ_scene), xPos, yPos); yPos += ySpacing;
-  text(String.format("Pitch: %.1f°, Yaw: %.1f°, Roll: %.1f°", degrees(pitch), degrees(yaw), degrees(roll)), xPos, yPos); yPos += ySpacing;
-  text(String.format("CrabX: %.0f, PedY: %.0f, Zoom: %.2fx", crabX, pedY, scaleFactor), xPos, yPos);
+  drawHUDText(String.format("Light Pos: %.0f, %.0f, %.0f", lightX_scene, lightY_scene, lightZ_scene));
+  drawHUDText(String.format("Pitch: %.1f°, Yaw: %.1f°, Roll: %.1f°", degrees(pitch), degrees(yaw), degrees(roll)));
+  drawHUDText(String.format("CrabX: %.0f, PedY: %.0f, Zoom: %.2fx", crabX, pedY, scaleFactor));
 
-  hint(ENABLE_DEPTH_TEST); // Aktifkan kembali depth test
+  hint(ENABLE_DEPTH_TEST); 
   popMatrix();
 }
